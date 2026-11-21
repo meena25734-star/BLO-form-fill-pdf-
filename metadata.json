@@ -1,0 +1,6 @@
+{
+  "name": "BLO Digital Form Filler (ECI Forms)",
+  "description": "Official client-side Digital Form Filler for Election Commission of India Form 6, Form 7, and Form 8 with precision PDF rendering and Devanagari script support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

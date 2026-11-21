@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E3A5F" />
+      <stop offset="100%" stop-color="#142944" />
+    </linearGradient>
+  </defs>
+  <!-- Full-bleed Civic Navy Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)" />
+
+  <!-- Subtle Tricolour Institutional Accent Bar -->
+  <rect x="112" y="76" width="96" height="10" rx="5" fill="#F97316" />
+  <rect x="208" y="76" width="96" height="10" rx="0" fill="#FFFFFF" />
+  <rect x="304" y="76" width="96" height="10" rx="5" fill="#16A34A" />
+
+  <!-- Clean Official Form Sheet -->
+  <rect x="116" y="108" width="248" height="312" rx="22" fill="#FFFFFF" />
+
+  <!-- Header Banner on Form -->
+  <rect x="140" y="134" width="200" height="54" rx="10" fill="#EFF6FF" />
+  <text
+    x="240"
+    y="170"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-weight="700"
+    font-size="30"
+    letter-spacing="2"
+    fill="#1E3A5F"
+  >ECI BLO</text>
+
+  <!-- Structured Form Rows -->
+  <rect x="144" y="214" width="142" height="14" rx="7" fill="#CBD5E1" />
+  <rect x="144" y="246" width="192" height="14" rx="7" fill="#E2E8F0" />
+  <rect x="144" y="278" width="166" height="14" rx="7" fill="#E2E8F0" />
+  <rect x="144" y="310" width="128" height="14" rx="7" fill="#E2E8F0" />
+
+  <!-- Form Numbers 6 · 7 · 8 -->
+  <text
+    x="144"
+    y="378"
+    font-family="Arial, Helvetica, sans-serif"
+    font-weight="700"
+    font-size="24"
+    fill="#1E3A5F"
+  >6 · 7 · 8</text>
+
+  <!-- Verified Digital PDF Check Badge -->
+  <circle cx="364" cy="364" r="76" fill="#0F766E" stroke="#1E3A5F" stroke-width="14" />
+  <path
+    d="M328 365 L353 390 L402 338"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="18"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
