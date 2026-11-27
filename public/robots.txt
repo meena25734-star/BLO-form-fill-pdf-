@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blo-digital-form-filler-eci-forms.ai.studio/sitemap.xml

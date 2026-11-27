@@ -1,0 +1,114 @@
+name: Build Standalone Android APK & AAB
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: 'Android Version Code (increment on every new store upload)'
+        required: false
+        default: '2'
+      version_name:
+        description: 'Android Version Name (e.g. 1.1.0)'
+        required: false
+        default: '1.1.0'
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Java 21 (for Android Gradle Plugin / Target SDK 35)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install Python Pillow for crisp Android launcher icons
+        run: python3 -m pip install --quiet Pillow || true
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build production offline web bundle (dist/)
+        run: npm run build
+
+      - name: Add Capacitor Android project
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+
+      - name: Configure Android SDK 35, Camera Permission, Icons & Release Signing
+        env:
+          ANDROID_VERSION_CODE: ${{ github.event.inputs.version_code || '2' }}
+          ANDROID_VERSION_NAME: ${{ github.event.inputs.version_name || '1.1.0' }}
+        run: node scripts/configure-android.mjs
+
+      - name: Sync bundled web assets & offline PDF templates into Android APK
+        run: npx cap sync android
+
+      - name: Prepare Release Signing Keystore
+        id: keystore
+        run: |
+          mkdir -p release-keys
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release-keys/blo-release-key.jks
+            echo "KEYSTORE_PATH=$PWD/release-keys/blo-release-key.jks" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}" >> "$GITHUB_ENV"
+            echo "generated=false" >> "$GITHUB_OUTPUT"
+          else
+            keytool -genkeypair -v \
+              -keystore release-keys/blo-release-key.jks \
+              -alias bloformkey \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass bloformpdf123 \
+              -keypass bloformpdf123 \
+              -dname "CN=BLO Form PDF, OU=Utility, O=BLO Form PDF, L=India, S=MP, C=IN"
+            echo "KEYSTORE_PATH=$PWD/release-keys/blo-release-key.jks" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PASSWORD=bloformpdf123" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=bloformkey" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=bloformpdf123" >> "$GITHUB_ENV"
+            echo "generated=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build Signed Release APK (Indus Appstore & Galaxy Store) and AAB (Play Store)
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease bundleRelease
+
+      - name: Collect Release Artifacts
+        run: |
+          mkdir -p android-release-output
+          cp android/app/build/outputs/apk/release/app-release.apk android-release-output/BLO-Form-PDF-release.apk
+          cp android/app/build/outputs/bundle/release/app-release.aab android-release-output/BLO-Form-PDF-release.aab
+          if [ "${{ steps.keystore.outputs.generated }}" = "true" ]; then
+            cp release-keys/blo-release-key.jks android-release-output/blo-release-key.jks
+            printf '%s\n' \
+              'Keep blo-release-key.jks safely! You need this exact same signing key for future app updates.' \
+              'Package ID: com.bloformfill.pdf' \
+              'Keystore Password: bloformpdf123' \
+              'Key Alias: bloformkey' \
+              'Key Password: bloformpdf123' \
+              > android-release-output/SIGNING-KEY-BACKUP-README.txt
+          fi
+
+      - name: Upload Signed APK & AAB Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BLO-Form-PDF-Standalone-Android-Package
+          path: android-release-output/
+          retention-days: 30

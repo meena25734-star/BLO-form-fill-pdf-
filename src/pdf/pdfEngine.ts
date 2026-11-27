@@ -15,6 +15,7 @@ import {
   Form8Data,
   FormId,
 } from '../types/forms';
+import { exportFileNatively } from '../utils/nativeBridge';
 
 const TEXT_COLOR = rgb(0.05, 0.13, 0.34); // Official crisp dark blue-ink stamp
 const CHECK_COLOR = rgb(0.04, 0.15, 0.42);
@@ -775,4 +776,21 @@ export function triggerPdfDownload(pdfBytes: Uint8Array, fileName: string): stri
   a.click();
   document.body.removeChild(a);
   return blobUrl;
+}
+
+/**
+ * Downloads the compiled PDF in browsers or natively writes & opens the Android Share/Save
+ * sheet when running inside the standalone Capacitor Android APK.
+ */
+export async function saveOrDownloadPdf(pdfBytes: Uint8Array, fileName: string): Promise<void> {
+  const handledNatively = await exportFileNatively(
+    pdfBytes,
+    fileName,
+    'Save, Print or Share Filled PDF'
+  );
+  if (handledNatively) {
+    return;
+  }
+  const blobUrl = triggerPdfDownload(pdfBytes, fileName);
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
 }

@@ -22,6 +22,33 @@ export interface CommonHeaderData {
   bloSealSignDataUrl: string | null;
 }
 
+export interface BloDefaultProfile {
+  acNo: string;
+  acName: string;
+  pcNo: string;
+  pcName: string;
+  stateName: string;
+  districtName: string;
+  place: string;
+  partNumber: string;
+  bloSealSignDataUrl: string | null;
+  updatedAt: string;
+}
+
+export interface SavedFormRecord {
+  id: string;
+  formId: FormId;
+  savedAt: string;
+  applicantName: string;
+  relativeOrEpic: string;
+  mobileNumber: string;
+  acSummary: string;
+  common: CommonHeaderData;
+  form6?: Form6Data;
+  form7?: Form7Data;
+  form8?: Form8Data;
+}
+
 export type RelationType = 'Father' | 'Mother' | 'Husband' | 'Wife' | 'Legal Guardian';
 export type ContactOwner = 'Self' | 'Relative';
 export type GenderType = 'Male' | 'Female' | 'Third Gender' | '';

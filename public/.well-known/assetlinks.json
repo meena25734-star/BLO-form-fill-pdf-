@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "studio.ai.blo_digital_form_filler_eci_forms.twa",
+      "sha256_cert_fingerprints": [
+        "29:99:30:42:39:F2:0C:E5:3A:92:C1:CF:41:36:60:BC:97:B8:69:31:38:E9:8C:4C:79:A4:46:63:66:F9:67:3D"
+      ]
+    }
+  }
+]

@@ -13,24 +13,40 @@ export default defineConfig(() => {
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: [
+          'favicon.ico',
           'icon.svg',
           'apple-touch-icon.png',
           'pwa-192x192.png',
           'pwa-512x512.png',
           'pwa-maskable-512x512.png',
+          'privacy-policy.html',
+          'download.html',
+          'robots.txt',
+          'sitemap.xml',
+          'screenshots/mobile-home.png',
+          'screenshots/mobile-form6.png',
+          'screenshots/desktop-home.png',
+          'screenshots/feature-graphic-1024x500.png',
         ],
         manifest: {
           id: '/',
-          name: 'BLO Digital Form Filler (ECI Forms)',
-          short_name: 'BLO ECI App',
+          name: 'blo form fill pdf',
+          short_name: 'BLO Form PDF',
           description:
-            'Official offline-ready digital form filler for Election Commission of India Form 6, Form 7, and Form 8 with precision PDF generation.',
+            'Offline-ready Election Commission of India Form 6, Form 7, and Form 8 PDF filler with live passport photo capture, Devanagari rendering, and instant PDF preview.',
+          lang: 'en',
+          dir: 'ltr',
           theme_color: '#1E3A5F',
           background_color: '#F8FAFC',
           display: 'standalone',
+          display_override: ['standalone', 'window-controls-overlay'],
           orientation: 'portrait-primary',
           start_url: '/',
           scope: '/',
+          prefer_related_applications: false,
+          launch_handler: {
+            client_mode: 'navigate-existing',
+          },
           categories: ['government', 'productivity', 'utilities'],
           icons: [
             {
@@ -52,10 +68,67 @@ export default defineConfig(() => {
               purpose: 'maskable',
             },
           ],
+          screenshots: [
+            {
+              src: '/screenshots/mobile-home.png',
+              sizes: '1080x1920',
+              type: 'image/png',
+              form_factor: 'narrow',
+              label: 'blo form fill pdf home screen with Form 6, Form 7, and Form 8 launcher buttons',
+            },
+            {
+              src: '/screenshots/mobile-form6.png',
+              sizes: '1080x1920',
+              type: 'image/png',
+              form_factor: 'narrow',
+              label: 'Form 6 voter registration with live camera photo capture and offline PDF generation',
+            },
+            {
+              src: '/screenshots/desktop-home.png',
+              sizes: '1920x1080',
+              type: 'image/png',
+              form_factor: 'wide',
+              label: 'Desktop view of blo form fill pdf for offline ECI Form 6, 7, and 8 PDF stamping',
+            },
+          ],
+          shortcuts: [
+            {
+              name: 'Form-6 (New Inclusion)',
+              short_name: 'Form-6',
+              description: 'Fill ECI Form-6 for new voter registration',
+              url: '/?form=form6',
+              icons: [{src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png'}],
+            },
+            {
+              name: 'Form-7 (Deletion)',
+              short_name: 'Form-7',
+              description: 'Fill ECI Form-7 for voter deletion or objection',
+              url: '/?form=form7',
+              icons: [{src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png'}],
+            },
+            {
+              name: 'Form-8 (Correction / PwD)',
+              short_name: 'Form-8',
+              description: 'Fill ECI Form-8 for correction, shifting, or replacement EPIC',
+              url: '/?form=form8',
+              icons: [{src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png'}],
+            },
+          ],
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,pdf}'],
-          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+          globPatterns: ['**/*.{js,mjs,css,html,ico,png,svg,woff,woff2,pdf}'],
+          maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
+          navigateFallback: '/index.html',
+          navigateFallbackDenylist: [
+            /^\/privacy-policy\.html$/,
+            /^\/download\.html$/,
+            /^\/robots\.txt$/,
+            /^\/sitemap\.xml$/,
+            /^\/\.well-known\//,
+          ],
+          cleanupOutdatedCaches: true,
+          clientsClaim: true,
+          skipWaiting: true,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -102,8 +175,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true,
-          type: 'module',
+          enabled: false,
         },
       }),
       // Copies src/assets into dist/ so root-relative URLs like
